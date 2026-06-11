@@ -27,7 +27,6 @@
             user-select: none;
         }
 
-        /* Allow text selection ONLY in the comment text area */
         textarea {
             -webkit-user-select: text;
             -khtml-user-select: text;
@@ -144,6 +143,23 @@
         .list-row { background: rgba(255, 255, 255, 0.6); border-radius: 14px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #FF758F; }
         .row-icon { font-size: 1.4rem; background: white; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .row-text { font-size: 0.88rem; color: #554448; line-height: 1.4; flex: 1; }
+
+        /* --- NEW STYLES FOR MEDIA & RATING --- */
+        .media-toolbar { display: flex; gap: 12px; justify-content: center; margin-bottom: 15px; }
+        .tool-btn { background: white; border: 2px solid #FFB6C1; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 3px 8px rgba(255, 117, 143, 0.2); transition: 0.2s; }
+        .tool-btn:active { transform: scale(0.9); }
+        .media-preview-area { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; justify-content: center; }
+        .img-preview { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid var(--deep-rose); }
+        .camera-overlay { display: none; margin-bottom: 15px; flex-direction: column; align-items: center; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 12px; }
+        .camera-overlay img { max-width: 100%; border-radius: 8px; margin-bottom: 10px; }
+        .tick-btn { background: #4CAF50; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4); }
+        .voice-recording-ui { display: none; flex-direction: column; align-items: center; margin-bottom: 15px; width: 100%; background: #FFF0F5; padding: 15px; border-radius: 12px; border: 2px solid var(--deep-rose); }
+        
+        .star-rating-container { background: white; border: 2px dashed #FFB6C1; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 25px; }
+        .stars { font-size: 2.2rem; color: #ddd; cursor: pointer; display: inline-block; }
+        .stars span { transition: color 0.2s; }
+        .stars span.active { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .rating-label { font-size: 1rem; font-weight: 700; color: var(--deep-rose); margin-top: 5px; height: 20px; }
     </style>
 </head>
 <body>
@@ -202,6 +218,14 @@
                 </div>
             </div>
 
+            <div class="star-rating-container">
+                <h3 style="color: #8A2846; font-family: 'Quicksand', sans-serif; margin-bottom: 10px;">How much did you love this website?</h3>
+                <div class="stars" id="rating-stars">
+                    <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+                </div>
+                <div class="rating-label" id="rating-text">Rate me!</div>
+            </div>
+
             <div class="banner-pink">
                 Take your time, enjoy each part, and always remember how much you mean to me.
                 <div style="margin-top: 5px; text-align: center;"><strong>I love you endlessly! 💕</strong></div>
@@ -215,9 +239,33 @@
             <div class="card" style="padding: 20px 15px;">
                 <div class="bow-decoration">✍️</div>
                 <p class="body-text" style="font-weight: 700; color: var(--deep-rose); margin-bottom: 15px;">
-                    Leave a beautiful comment about everything you felt exploring this little space. Pour your heart out! ♡
+                    Leave a beautiful comment, voice note, or photos! Pour your heart out! ♡
                 </p>
                 
+                <div class="media-toolbar">
+                    <button class="tool-btn" onclick="document.getElementById('camera-input').click()">📷</button>
+                    <button class="tool-btn" onclick="document.getElementById('gallery-input').click()">➕</button>
+                    <button class="tool-btn" id="mic-record-btn" onclick="toggleVoiceRecording()">🎤</button>
+                </div>
+
+                <input type="file" accept="image/*" capture="environment" id="camera-input" style="display:none" onchange="handleCameraCapture(event)">
+                <input type="file" accept="image/*" multiple id="gallery-input" style="display:none" onchange="handleGallerySelect(event)">
+
+                <div class="camera-overlay" id="camera-overlay">
+                    <img id="camera-preview-img" src="" alt="Captured Image">
+                    <button class="tick-btn" onclick="confirmCameraImage()">✔️</button>
+                </div>
+
+                <div class="media-preview-area" id="media-preview-area"></div>
+
+                <div class="voice-recording-ui" id="voice-recording-ui">
+                    <div class="mic-pulse" style="width: 15px; height: 15px; margin-bottom: 10px;"></div>
+                    <div style="font-weight: 700; color: var(--deep-rose); margin-bottom: 10px;">Recording Voice Note... 🔴</div>
+                    <audio id="audio-playback" controls style="display:none; width: 100%; margin-bottom: 10px;"></audio>
+                    <button class="btn-primary" id="stop-record-btn" onclick="stopRecording()" style="padding: 8px 20px; font-size: 0.9rem;">⏹️ Stop & Keep</button>
+                    <button class="btn-primary" onclick="cancelRecording()" style="background: #ccc; margin-top: 5px; padding: 8px 20px; font-size: 0.9rem; box-shadow: none;">❌ Cancel</button>
+                </div>
+
                 <textarea id="comment-input" placeholder="Write as much as you want... there is no limit! ✨" style="width: 100%; min-height: 140px; border-radius: 12px; border: 2px dashed #FFB6C1; padding: 15px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; color: #554448; resize: vertical; outline: none; margin-bottom: 15px; background: rgba(255,255,255,0.8);"></textarea>
                 
                 <button class="btn-primary" id="submit-btn" style="width: 100%;">
@@ -316,6 +364,128 @@
     </div>
 
     <script>
+        // GLOBALS FOR DATABASE SAVING
+        window.siteRating = null;
+        window.attachedImages = [];
+        window.voiceAudioBase64 = null;
+
+        // --- RATING SYSTEM LOGIC ---
+        const stars = document.querySelectorAll('.stars span');
+        const ratingText = document.getElementById('rating-text');
+        const ratingLabels = ["Bad", "Okay", "Good", "Amazing", "Brilliant! ✨"];
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                window.siteRating = index + 1;
+                stars.forEach((s, i) => {
+                    s.classList.toggle('active', i <= index);
+                });
+                ratingText.innerText = ratingLabels[index];
+            });
+        });
+
+        // --- MEDIA HANDLING ---
+        let tempCameraImage = null;
+
+        function fileToBase64(file, callback) {
+            const reader = new FileReader();
+            reader.onload = (e) => callback(e.target.result);
+            reader.readAsDataURL(file);
+        }
+
+        // Camera Logic
+        function handleCameraCapture(event) {
+            const file = event.target.files[0];
+            if (file) {
+                fileToBase64(file, (base64) => {
+                    tempCameraImage = base64;
+                    document.getElementById('camera-preview-img').src = base64;
+                    document.getElementById('camera-overlay').style.display = 'flex';
+                });
+            }
+        }
+
+        function confirmCameraImage() {
+            if (tempCameraImage) {
+                window.attachedImages.push(tempCameraImage);
+                appendImagePreview(tempCameraImage);
+                document.getElementById('camera-overlay').style.display = 'none';
+                tempCameraImage = null;
+            }
+        }
+
+        // Gallery Logic
+        function handleGallerySelect(event) {
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                fileToBase64(files[i], (base64) => {
+                    window.attachedImages.push(base64);
+                    appendImagePreview(base64);
+                });
+            }
+        }
+
+        function appendImagePreview(src) {
+            const img = document.createElement('img');
+            img.src = src;
+            img.className = 'img-preview';
+            document.getElementById('media-preview-area').appendChild(img);
+        }
+
+        // --- VOICE RECORDING LOGIC ---
+        let mediaRecorder;
+        let audioChunks = [];
+
+        function toggleVoiceRecording() {
+            document.getElementById('comment-input').style.display = 'none';
+            document.getElementById('voice-recording-ui').style.display = 'flex';
+            document.getElementById('audio-playback').style.display = 'none';
+            document.getElementById('stop-record-btn').style.display = 'block';
+            window.voiceAudioBase64 = null;
+
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                audioChunks = [];
+
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    audioChunks.push(event.data);
+                });
+
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        window.voiceAudioBase64 = reader.result;
+                        const audioPlayback = document.getElementById('audio-playback');
+                        audioPlayback.src = window.voiceAudioBase64;
+                        audioPlayback.style.display = 'block';
+                    };
+                    reader.readAsDataURL(audioBlob);
+                    stream.getTracks().forEach(track => track.stop());
+                });
+            }).catch(err => {
+                alert("Microphone access is needed for voice notes! 🎤");
+                cancelRecording();
+            });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                document.getElementById('stop-record-btn').style.display = 'none';
+            }
+        }
+
+        function cancelRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+            document.getElementById('voice-recording-ui').style.display = 'none';
+            document.getElementById('comment-input').style.display = 'block';
+            window.voiceAudioBase64 = null;
+        }
+
+
+        // PRE-EXISTING LOGIC
         let audioStream = null;
         let audioContext = null;
         let isEnvelopeOpened = false;
@@ -392,7 +562,6 @@
         function updateCelebParticles() { celebCtx.clearRect(0, 0, celebCanvas.width, celebCanvas.height); for (let i = celebParticles.length - 1; i >= 0; i--) { let p = celebParticles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.3; p.rotation += p.rotationSpeed; p.opacity -= 0.012; if (p.opacity <= 0) { celebParticles.splice(i, 1); continue; } celebCtx.save(); celebCtx.translate(p.x, p.y); celebCtx.rotate((p.rotation * Math.PI) / 180); celebCtx.globalAlpha = p.opacity; celebCtx.fillStyle = p.color; celebCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); celebCtx.restore(); } requestAnimationFrame(updateCelebParticles); }
         updateCelebParticles();
 
-        // Let user select text inside input, block everywhere else
         document.addEventListener('contextmenu', e => { if (e.target.tagName !== 'TEXTAREA') e.preventDefault(); }, false);
         document.addEventListener('selectstart', e => { if (e.target.tagName !== 'TEXTAREA') e.preventDefault(); }, false);
         document.addEventListener('dragstart', e => { if (e.target.tagName !== 'TEXTAREA') e.preventDefault(); }, false);
