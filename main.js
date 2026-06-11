@@ -1,6 +1,6 @@
 // Import the Firebase tools we need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 
 // --- STEP 1: PASTE YOUR FIREBASE CONFIG HERE ---
@@ -36,7 +36,7 @@ if (submitBtn) {
                 // Save the text AND the exact timestamp to the collection
                 await addDoc(collection(db, "comments"), {
                     text: textValue,
-                    timestamp: new Date().toISOString() // <-- THIS IS THE NEW LINE
+                    timestamp: serverTimestamp() // <-- CHANGED TO USE FIREBASE SERVER TIME
                 });
                 console.log("Comment successfully saved to database!");
                 commentInput.value = ""; // Clear the input box
