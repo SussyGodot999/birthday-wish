@@ -369,18 +369,45 @@
         window.attachedImages = [];
         window.voiceAudioBase64 = null;
 
-        // --- RATING SYSTEM LOGIC ---
+        // --- FIXED RATING SYSTEM LOGIC ---
         const stars = document.querySelectorAll('.stars span');
         const ratingText = document.getElementById('rating-text');
         const ratingLabels = ["Bad", "Okay", "Good", "Amazing", "Brilliant! ✨"];
 
+        // Initialization to check if a user has already rated it securely in local storage
+        function initializeRating() {
+            const savedRating = localStorage.getItem('userSiteRating');
+            if (savedRating) {
+                window.siteRating = parseInt(savedRating);
+                stars.forEach((s, i) => {
+                    s.classList.toggle('active', i <= window.siteRating - 1);
+                    s.style.pointerEvents = 'none'; // Lock further interaction
+                });
+                if(ratingText) {
+                    ratingText.innerText = ratingLabels[window.siteRating - 1] + " (Permanently Saved!)";
+                }
+            }
+        }
+        initializeRating();
+
         stars.forEach((star, index) => {
             star.addEventListener('click', () => {
+                // Return if they already rated the site
+                if (localStorage.getItem('userSiteRating')) return;
+
                 window.siteRating = index + 1;
+                localStorage.setItem('userSiteRating', window.siteRating);
+                
                 stars.forEach((s, i) => {
                     s.classList.toggle('active', i <= index);
+                    s.style.pointerEvents = 'none';
                 });
-                ratingText.innerText = ratingLabels[index];
+                if(ratingText) {
+                    ratingText.innerText = ratingLabels[index] + " (Permanently Saved!)";
+                }
+
+                // Dispatches an event that main.js listens to and immediately sends the rating to the admin panel
+                window.dispatchEvent(new CustomEvent('ratingSubmitted', { detail: window.siteRating }));
             });
         });
 
@@ -510,7 +537,6 @@
             document.getElementById('comment-input').style.display = 'block';
             window.voiceAudioBase64 = null;
         }
-
 
         // PRE-EXISTING LOGIC
         let audioStream = null;
