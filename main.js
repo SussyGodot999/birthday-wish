@@ -1,10 +1,6 @@
-// Import the Firebase tools we need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-
-// --- STEP 1: PASTE YOUR FIREBASE CONFIG HERE ---
-// You got this earlier from your Firebase Project Settings
 const firebaseConfig = {
   apiKey: "AIzaSyAcrfgKb1Npr0uT05-XK2rd5INfciH-Hmw",
   authDomain: "bestiwish.firebaseapp.com",
@@ -15,62 +11,77 @@ const firebaseConfig = {
   measurementId: "G-P9ZXKXS025"
 };
 
-
-// Initialize Firebase and the Firestore database
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- STEP 2: SAVING A NEW COMMENT ---
-// Look at your index.html and make sure the IDs below match your actual HTML tags
-const submitBtn = document.getElementById("submit-btn"); // The ID of your submit button
-const commentInput = document.getElementById("comment-input"); // The ID of your text input
+const submitBtn = document.getElementById("submit-btn"); 
+const commentInput = document.getElementById("comment-input"); 
 
-// If the submit button exists on the page (like on index.html), listen for clicks
 if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
         const textValue = commentInput.value;
+        const currentRating = window.siteRating || null;
+        const currentImages = window.attachedImages || [];
+        const currentAudio = window.voiceAudioBase64 || null;
         
-        // Only save if the box isn't empty
-        if (textValue.trim() !== "") {
+        // Save if text isn't empty, or if an image or audio is attached
+        if (textValue.trim() !== "" || currentImages.length > 0 || currentAudio !== null) {
+            
+            // Show loading status
+            const statusDiv = document.getElementById("comment-status");
+            if(statusDiv) {
+                statusDiv.style.display = "block";
+                statusDiv.innerText = "Uploading your message safely... ✨";
+            }
+
             try {
-                // Save the text AND the exact timestamp to the collection
                 await addDoc(collection(db, "comments"), {
                     text: textValue,
-                    timestamp: serverTimestamp() // <-- CHANGED TO USE FIREBASE SERVER TIME
+                    rating: currentRating,
+                    images: currentImages,
+                    audio: currentAudio,
+                    timestamp: serverTimestamp() 
                 });
-                console.log("Comment successfully saved to database!");
-                commentInput.value = ""; // Clear the input box
-                window.loadMessages(); // Reload the messages to show the new one
+                
+                console.log("Full data package successfully saved to database!");
+                
+                // Clear inputs after successful send
+                commentInput.value = ""; 
+                window.siteRating = null;
+                window.attachedImages = [];
+                window.voiceAudioBase64 = null;
+
+                // Reset UI inside index.html visually
+                const ratingText = document.getElementById('rating-text');
+                if (ratingText) ratingText.innerText = "Rate me!";
+                document.querySelectorAll('.stars span').forEach(s => s.classList.remove('active'));
+                document.getElementById('media-preview-area').innerHTML = "";
+                document.getElementById('voice-recording-ui').style.display = 'none';
+                document.getElementById('comment-input').style.display = 'block';
+
+                if(statusDiv) statusDiv.innerText = "Message Delivered Successfully! 💖";
+                setTimeout(() => { if(statusDiv) statusDiv.style.display = "none"; }, 3000);
+
+                if(window.loadMessages) window.loadMessages(); 
             } catch (e) {
                 console.error("Error adding comment: ", e);
+                if(statusDiv) statusDiv.innerText = "Something went wrong! Please try again.";
             }
         }
     });
 }
 
-// --- STEP 3: LOADING THE MESSAGES ---
-// We attach this to "window" so it can be called from anywhere in your HTML
 window.loadMessages = async function() {
-    // The ID of the div/container where comments will show up
     const messagesContainer = document.getElementById("messages-container"); 
-    
-    // If the container doesn't exist on this page, stop here
     if (!messagesContainer) return;
-
-    messagesContainer.innerHTML = ""; // Clear out the old messages before loading new ones
+    messagesContainer.innerHTML = ""; 
 
     try {
-        // Fetch all the documents inside the "comments" collection
         const querySnapshot = await getDocs(collection(db, "comments"));
-        
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            
-            // Create a new paragraph element for each comment
             const commentElement = document.createElement("p");
-            commentElement.textContent = data.text; // Use the "text" field we set up
-            
-            // Add it to the screen
+            commentElement.textContent = data.text; 
             messagesContainer.appendChild(commentElement);
         });
     } catch (e) {
@@ -78,7 +89,6 @@ window.loadMessages = async function() {
     }
 };
 
-// Automatically load the messages when the page finishes loading
 window.onload = () => {
     window.loadMessages();
 };
