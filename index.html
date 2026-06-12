@@ -27,7 +27,7 @@
             user-select: none;
         }
 
-        textarea {
+        textarea, input {
             -webkit-user-select: text;
             -khtml-user-select: text;
             -moz-user-select: text;
@@ -40,10 +40,11 @@
             background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             overflow-x: hidden;
             position: relative;
+            padding-bottom: 120px; /* Space for the bottom AI bar */
         }
 
         #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
@@ -59,16 +60,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: 20px;
         }
 
-        .screen {
-            display: none;
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-            animation: smoothFadeUp 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
+        .screen { display: none; width: 100%; flex-direction: column; align-items: center; animation: smoothFadeUp 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .screen.active { display: flex; }
 
         @keyframes smoothFadeUp {
@@ -76,6 +71,7 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* Existing Envelope Styles */
         .envelope-wrapper { display: flex; flex-direction: column; align-items: center; transition: transform 1s ease, opacity 0.5s ease; width: 100%; }
         .envelope { position: relative; width: 280px; height: 180px; background: #fdfdfd; box-shadow: 0 10px 30px rgba(0,0,0,0.15); cursor: pointer; border-radius: 4px; }
         .envelope .flap { position: absolute; top: 0; width: 0; height: 0; border-left: 140px solid transparent; border-right: 140px solid transparent; border-top: 100px solid #f2f2f2; z-index: 3; transform-origin: top; transition: transform var(--transition-speed) ease; }
@@ -87,12 +83,12 @@
         .seal { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--deep-rose); border-radius: 50%; z-index: 4; display: flex; justify-content: center; align-items: center; color: white; font-size: 0.65rem; text-transform: uppercase; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 2px solid white; transition: all 0.3s ease; text-align: center; line-height: 1.2; padding: 5px; }
         .seal:active { transform: translateX(-50%) scale(0.92); }
         .instruction-text { margin-top: 30px; color: white; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2); text-align: center; animation: pulse 2s infinite; }
-        
         @keyframes pulse { 0%, 100% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
         .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 0; }
         .envelope-wrapper.open .letter-preview { transform: translateY(-80px); }
         .envelope-wrapper.exit { transform: translateY(-100vh) scale(0.5); opacity: 0; }
 
+        /* General UI Elements */
         .main-title { font-family: 'Pacifico', cursive; color: #8A2846; font-size: 3rem; text-align: center; line-height: 1.1; margin-bottom: 2px; text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6); }
         .sub-title { font-family: 'Caveat', cursive; color: var(--deep-rose); font-size: 2.3rem; margin-bottom: 25px; text-align: center; }
 
@@ -101,26 +97,23 @@
         
         .btn-primary { background: linear-gradient(135deg, #FF758F 0%, #FF85A1 100%); color: white; border: none; padding: 14px 35px; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.1rem; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 117, 143, 0.4); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
         .btn-primary:active { transform: scale(0.95); }
-        .btn-primary:disabled { cursor: not-allowed; }
+        .btn-primary:disabled { cursor: not-allowed; opacity: 0.6; }
         
         .divider { height: 1px; background: radial-gradient(circle, #FFB6C1 0%, transparent 80%); margin: 15px 0; }
         .body-text { color: #554448; font-size: 0.95rem; line-height: 1.6; }
 
         .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%; margin-bottom: 25px; }
         .grid-item.full-width { grid-column: span 2; }
-        .grid-item { background: rgba(255, 255, 255, 0.85); border-radius: 18px; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2); border: 1px solid rgba(255, 255, 255, 0.7); }
+        .grid-item { background: rgba(255, 255, 255, 0.85); border-radius: 18px; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2); border: 1px solid rgba(255, 255, 255, 0.7); text-align: center; }
         .grid-item:active { transform: scale(0.93); background: rgba(255, 255, 255, 0.95); }
         .grid-icon { font-size: 2.2rem; margin-bottom: 8px; }
-        .grid-label { font-size: 0.85rem; font-weight: 700; color: #7A4B57; text-align: center; }
+        .grid-label { font-size: 0.85rem; font-weight: 700; color: #7A4B57; }
 
         .banner-pink { background: rgba(255, 182, 193, 0.4); border: 1px dashed #FF758F; border-radius: 16px; padding: 14px 18px; font-size: 0.85rem; color: #8A2846; font-weight: 700; line-height: 1.4; width: 100%; }
-
+        
+        /* Other specific components */
         .letter-content { text-align: left; color: #554448; font-size: 0.95rem; line-height: 1.7; max-height: 50vh; overflow-y: auto; padding-right: 4px; }
-        .letter-content::-webkit-scrollbar { width: 4px; }
-        .letter-content::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 4px; }
-        .letter-content p { margin-bottom: 15px; }
         .handwriting { font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: var(--deep-rose); }
-
         .cake-wrapper { position: relative; width: 200px; height: 180px; margin: 30px auto 15px auto; }
         .cake-base { position: absolute; bottom: 10px; width: 180px; height: 90px; background: #F4ACB7; border-radius: 20px 20px 10px 10px; box-shadow: 0 6px 0 #D9386A; left: 10px; }
         .cake-topping { position: absolute; top: -15px; width: 180px; height: 30px; background: #FFF0F5; border-radius: 50%; box-shadow: 0 4px 0 #E8AEB7; }
@@ -129,26 +122,47 @@
         .flame { position: absolute; top: -15px; left: -2px; width: 14px; height: 20px; background: #FFDE4D; border-radius: 50% 50% 20% 20%; box-shadow: 0 0 10px #FF758F, 0 0 20px #FFDE4D; animation: flicker 0.15s infinite alternate; transform-origin: bottom center; }
         @keyframes flicker { 0% { transform: scale(1) rotate(-2deg); } 100% { transform: scale(1.1) rotate(3deg); } }
         .flame.blown-out { display: none !important; }
-
         .mic-badge { background: #FFE5EC; color: var(--deep-rose); padding: 8px 15px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; margin-top: 15px; display: inline-flex; align-items: center; gap: 6px; }
-        .mic-pulse { width: 8px; height: 8px; background: var(--deep-rose); border-radius: 50%; animation: pulseWave 1.2s infinite ease-in-out; }
-        @keyframes pulseWave { 0%, 100% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 1; } }
-
         .gift-box { font-size: 5rem; cursor: pointer; transition: transform 0.3s ease; margin: 25px 0; animation: wobble 2s infinite ease-in-out; display: inline-block; }
         @keyframes wobble { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
-
         .sticky-note { background: #FFF0F5; border-left: 5px solid #FF85A1; padding: 15px; border-radius: 0 12px 12px 0; text-align: left; margin-bottom: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.03); }
-
         .list-container { display: flex; flex-direction: column; gap: 12px; width: 100%; text-align: left; }
         .list-row { background: rgba(255, 255, 255, 0.6); border-radius: 14px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; border-left: 4px solid #FF758F; }
         .row-icon { font-size: 1.4rem; background: white; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .row-text { font-size: 0.88rem; color: #554448; line-height: 1.4; flex: 1; }
-        
-        .star-rating-container { background: white; border: 2px dashed #FFB6C1; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 25px; }
+        .star-rating-container { background: white; border: 2px dashed #FFB6C1; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 25px; width: 100%; }
         .stars { font-size: 2.2rem; color: #ddd; cursor: pointer; display: inline-block; }
         .stars span { transition: color 0.2s; }
         .stars span.active { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .rating-label { font-size: 1rem; font-weight: 700; color: var(--deep-rose); margin-top: 5px; height: 20px; }
+        
+        /* Progress Bar for Questionnaire */
+        .progress-bar-container { width: 100%; background: #FFE5EC; border-radius: 10px; height: 12px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--deep-rose); width: 0%; transition: width 0.4s ease; }
+
+        /* Fixed Bottom Assistant Bar */
+        #bottom-assistant-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 3px dashed #FFB6C1;
+            padding: 10px 20px;
+            z-index: 999;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #countdown-text { font-family: 'Quicksand', sans-serif; font-weight: 700; color: #8A2846; font-size: 1rem; margin-bottom: 4px; text-align: center; }
+        #ai-chat-container { width: 100%; max-width: 450px; background: white; border-radius: 12px; border: 1px solid #FFB6C1; padding: 10px; margin-top: 10px; flex-direction: column; display: none; }
+        #chat-messages { max-height: 150px; overflow-y: auto; padding-right: 5px; margin-bottom: 10px; }
+        #chat-messages::-webkit-scrollbar { width: 4px; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 4px; }
+        .ai-input-wrapper { display: flex; gap: 8px; }
+        .ai-input-wrapper input { flex: 1; border: 1px solid #FFB6C1; border-radius: 20px; padding: 8px 15px; outline: none; font-family: 'Quicksand', sans-serif; }
     </style>
 </head>
 <body>
@@ -185,6 +199,16 @@
                     <div class="grid-icon">✉️</div>
                     <div class="grid-label">A Letter for You</div>
                 </div>
+                
+                <div class="grid-item" onclick="navigateTo('questionnaire-screen')">
+                    <div class="grid-icon">📝</div>
+                    <div class="grid-label">You Wanted...</div>
+                </div>
+                <div class="grid-item" onclick="navigateTo('nhie-screen')">
+                    <div class="grid-icon">🫣</div>
+                    <div class="grid-label">Never Have I Ever</div>
+                </div>
+
                 <div class="grid-item" onclick="navigateTo('cake-screen')">
                     <div class="grid-icon">🎂</div>
                     <div class="grid-label">Birthday Cake</div>
@@ -212,7 +236,7 @@
                 <div class="stars" id="rating-stars">
                     <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
                 </div>
-                <div class="rating-label" id="rating-text">Rate me!</div>
+                <div class="rating-label" id="rating-text" style="font-size: 1rem; font-weight: 700; color: var(--deep-rose); margin-top: 5px;">Rate me!</div>
             </div>
 
             <div class="banner-pink">
@@ -221,24 +245,52 @@
             </div>
         </div>
 
+        <div id="questionnaire-screen" class="screen">
+            <h1 class="main-title" style="font-size: 2.8rem;">You Wanted...</h1>
+            <div class="sub-title">Tell me everything! 📝</div>
+
+            <div class="card" style="padding: 20px 15px;">
+                <div class="bow-decoration">✨</div>
+                <div class="progress-bar-container"><div class="progress-bar" id="q-progress"></div></div>
+                <div id="q-status" style="font-weight: 700; color: var(--deep-rose); margin-bottom: 15px;">0 out of 10 done</div>
+                
+                <div id="question-container" style="text-align: left;">
+                    <p id="q-text" style="font-size: 1.1rem; font-weight: bold; color: #554448; margin-bottom: 10px;"></p>
+                    <input type="text" id="q-input" placeholder="Type your answer here..." style="width: 100%; border-radius: 12px; border: 2px dashed #FFB6C1; padding: 12px; font-family: 'Quicksand', sans-serif; font-size: 1rem; outline: none; margin-bottom: 15px;">
+                    <button class="btn-primary" id="q-next-btn" style="width: 100%;">Next Question ✨</button>
+                </div>
+
+                <div id="q-finished-container" style="display: none;">
+                    <p style="font-size: 1.1rem; font-weight: bold; color: #8A2846;">All done! Your wishes are safe with me. 💖</p>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="navigateTo('menu-screen')">👈 Back to Menu</button>
+        </div>
+
+        <div id="nhie-screen" class="screen">
+            <h1 class="main-title" style="font-size: 2.4rem;">Never Have I Ever</h1>
+            <div class="sub-title">Bestie Edition 🫣</div>
+
+            <div class="card" style="padding: 30px 15px; min-height: 250px; display: flex; flex-direction: column; justify-content: center;">
+                <div class="bow-decoration">🎭</div>
+                <p id="nhie-text" style="font-size: 1.3rem; font-weight: bold; color: #8A2846; font-style: italic; margin-bottom: 25px;">
+                    "Click the button to reveal a truth!"
+                </p>
+                <button class="btn-primary" onclick="nextNHIE()" style="margin: 0 auto;">Next Statement 🎲</button>
+            </div>
+            <button class="btn-primary" onclick="navigateTo('menu-screen')">👈 Back to Menu</button>
+        </div>
+
         <div id="comment-screen" class="screen">
             <h1 class="main-title" style="font-size: 2.8rem;">Your Thoughts</h1>
             <div class="sub-title">Mean Everything 💌</div>
-
             <div class="card" style="padding: 20px 15px;">
                 <div class="bow-decoration">✍️</div>
-                <p class="body-text" style="font-weight: 700; color: var(--deep-rose); margin-bottom: 15px;">
-                    Leave a beautiful comment! Pour your heart out! ♡
-                </p>
-
+                <p class="body-text" style="font-weight: 700; color: var(--deep-rose); margin-bottom: 15px;">Leave a beautiful comment! Pour your heart out! ♡</p>
                 <textarea id="comment-input" placeholder="Write as much as you want... there is no limit! ✨" style="width: 100%; min-height: 140px; border-radius: 12px; border: 2px dashed #FFB6C1; padding: 15px; font-family: 'Quicksand', sans-serif; font-size: 0.95rem; color: #554448; resize: vertical; outline: none; margin-bottom: 15px; background: rgba(255,255,255,0.8);"></textarea>
-                
-                <button class="btn-primary" id="submit-btn" style="width: 100%;">
-                    ✨ Send Message ✨
-                </button>
+                <button class="btn-primary" id="submit-btn" style="width: 100%;">✨ Send Message ✨</button>
                 <div id="comment-status" style="margin-top: 12px; font-size: 0.9rem; color: var(--deep-rose); font-weight: bold; display: none;"></div>
             </div>
-
             <button class="btn-primary" onclick="navigateTo('menu-screen')">👈 Back to Menu</button>
         </div>
 
@@ -264,9 +316,7 @@
             <div class="sub-title">Blow the Candles! 🎂</div>
             <div class="card">
                 <div class="bow-decoration">✨</div>
-                <p class="body-text" id="cake-instruction" style="font-weight: 700; color: var(--deep-rose);">
-                    Activate microphone access and blow directly into your phone to put out the fire! 🌬️
-                </p>
+                <p class="body-text" id="cake-instruction" style="font-weight: 700; color: var(--deep-rose);">Activate microphone access and blow directly into your phone to put out the fire! 🌬️</p>
                 <div class="cake-wrapper">
                     <div class="cake-base"><div class="cake-topping"></div></div>
                     <div class="candle c1"><div class="flame"></div></div>
@@ -328,33 +378,128 @@
 
     </div>
 
+    <div id="bottom-assistant-bar">
+        <div id="countdown-text">Loading Timer...</div>
+        <div style="font-size: 0.8rem; color: #554448; text-align: center; margin-bottom: 5px;">I will be always there with you and be ready for your next birthday surprises. 💖</div>
+        
+        <div id="ai-chat-container">
+            <div id="chat-messages"></div>
+            <div class="ai-input-wrapper">
+                <input type="text" id="ai-input" placeholder="Say something sweet...">
+                <button id="ai-send" class="btn-primary" style="padding: 8px 15px; font-size: 0.9rem;">Send</button>
+            </div>
+        </div>
+
+        <button id="toggle-chat-btn" style="background: none; border: none; color: var(--deep-rose); font-family: 'Quicksand', sans-serif; font-weight: bold; cursor: pointer; margin-top: 5px;">💬 Talk to my AI Assistant</button>
+    </div>
+
     <script>
+        // --- COUNTDOWN TIMER LOGIC ---
+        function updateCountdown() {
+            const now = new Date();
+            // Assuming next birthday is 1 year from now for demonstration.
+            const nextBday = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()); 
+            
+            const diff = nextBday - now;
+            const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown-text').innerText = 
+                `${months}m : ${days}d : ${hours}h : ${mins}m : ${secs}s`;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- QUESTIONNAIRE LOGIC ---
+        const questions = [
+            "What is your biggest dream right now? ✨",
+            "Who is your absolute favorite person? (Say me! 😂)",
+            "What is the one thing you really want to get for your birthday? 🎁",
+            "What is your favorite makeup accessory right now? 💄",
+            "If we could travel anywhere together, where would it be? ✈️",
+            "What is your favorite memory of us? 📸",
+            "What makes you the happiest on a bad day? ☀️",
+            "What is your favorite late-night snack? 🍕",
+            "If you could have one superpower, what would it be? 🦸‍♀️",
+            "What are you looking forward to the most this year? 🌟"
+        ];
+        
+        let currentQIndex = 0;
+        let answersArray = [];
+
+        const qText = document.getElementById('q-text');
+        const qInput = document.getElementById('q-input');
+        const qStatus = document.getElementById('q-status');
+        const qProgressBar = document.getElementById('q-progress');
+        
+        function loadQuestion() {
+            qText.innerText = questions[currentQIndex];
+            qInput.value = "";
+            qStatus.innerText = `${currentQIndex} out of 10 done`;
+            qProgressBar.style.width = `${(currentQIndex / 10) * 100}%`;
+        }
+
+        document.getElementById('q-next-btn').addEventListener('click', () => {
+            const answer = qInput.value.trim();
+            if(!answer) return; // Must answer
+
+            answersArray.push({ question: questions[currentQIndex], answer: answer });
+            currentQIndex++;
+
+            if(currentQIndex < questions.length) {
+                loadQuestion();
+            } else {
+                qProgressBar.style.width = `100%`;
+                qStatus.innerText = `10 out of 10 done!`;
+                document.getElementById('question-container').style.display = "none";
+                document.getElementById('q-finished-container').style.display = "block";
+                
+                // Dispatch event to send to Firebase
+                window.dispatchEvent(new CustomEvent('questionnaireSubmitted', { detail: answersArray }));
+            }
+        });
+        loadQuestion(); // Initial load
+
+        // --- NEVER HAVE I EVER LOGIC ---
+        const nhieStatements = [
+            "Never have I ever stayed up past 3 AM talking to you. 🌙",
+            "Never have I ever borrowed your clothes and 'forgotten' to return them. 👗",
+            "Never have I ever laughed so hard with you that I cried. 😂",
+            "Never have I ever ignored someone else's text just to talk to you. 📱",
+            "Never have I ever sent you an ugly selfie. 📸",
+            "Never have I ever planned an imaginary vacation for us. 🏝️",
+            "Never have I ever known exactly what you were thinking just by looking at you. 👀"
+        ];
+        function nextNHIE() {
+            const random = nhieStatements[Math.floor(Math.random() * nhieStatements.length)];
+            document.getElementById('nhie-text').innerText = `"${random}"`;
+            triggerConfettiExplosion();
+        }
+
         // --- FIXED RATING SYSTEM LOGIC ---
         const stars = document.querySelectorAll('.stars span');
         const ratingText = document.getElementById('rating-text');
         const ratingLabels = ["Bad", "Okay", "Good", "Amazing", "Brilliant! ✨"];
 
-        // Initialization to check if a user has already rated it securely in local storage
         function initializeRating() {
             const savedRating = localStorage.getItem('userSiteRating');
             if (savedRating) {
                 const siteRating = parseInt(savedRating);
                 stars.forEach((s, i) => {
                     s.classList.toggle('active', i <= siteRating - 1);
-                    s.style.pointerEvents = 'none'; // Lock further interaction
+                    s.style.pointerEvents = 'none';
                 });
-                if(ratingText) {
-                    ratingText.innerText = ratingLabels[siteRating - 1] + " (Permanently Saved!)";
-                }
+                if(ratingText) ratingText.innerText = ratingLabels[siteRating - 1] + " (Permanently Saved!)";
             }
         }
         initializeRating();
 
         stars.forEach((star, index) => {
             star.addEventListener('click', () => {
-                // Return if they already rated the site
                 if (localStorage.getItem('userSiteRating')) return;
-
                 const siteRating = index + 1;
                 localStorage.setItem('userSiteRating', siteRating);
                 
@@ -362,20 +507,14 @@
                     s.classList.toggle('active', i <= index);
                     s.style.pointerEvents = 'none';
                 });
-                if(ratingText) {
-                    ratingText.innerText = ratingLabels[index] + " (Permanently Saved!)";
-                }
+                if(ratingText) ratingText.innerText = ratingLabels[index] + " (Permanently Saved!)";
 
-                // Dispatches an event that main.js listens to and immediately sends the rating to the database
                 window.dispatchEvent(new CustomEvent('ratingSubmitted', { detail: siteRating }));
             });
         });
 
-        // PRE-EXISTING LOGIC
-        let audioStream = null;
-        let audioContext = null;
-        let isEnvelopeOpened = false;
-
+        // PRE-EXISTING LOGIC & ANIMATIONS
+        let audioStream = null; let audioContext = null; let isEnvelopeOpened = false;
         function openEnvelopeSequence() {
             if (isEnvelopeOpened) return;
             isEnvelopeOpened = true;
@@ -432,6 +571,7 @@
             triggerConfettiExplosion(); setTimeout(triggerConfettiExplosion, 350); setTimeout(triggerConfettiExplosion, 800);
         }
 
+        // Particle Canvas Logic
         const bgCanvas = document.getElementById('particleCanvas'); const bgCtx = bgCanvas.getContext('2d'); let bgParticles = [];
         function resizeBgCanvas() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeBgCanvas); resizeBgCanvas();
@@ -448,11 +588,11 @@
         function updateCelebParticles() { celebCtx.clearRect(0, 0, celebCanvas.width, celebCanvas.height); for (let i = celebParticles.length - 1; i >= 0; i--) { let p = celebParticles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.3; p.rotation += p.rotationSpeed; p.opacity -= 0.012; if (p.opacity <= 0) { celebParticles.splice(i, 1); continue; } celebCtx.save(); celebCtx.translate(p.x, p.y); celebCtx.rotate((p.rotation * Math.PI) / 180); celebCtx.globalAlpha = p.opacity; celebCtx.fillStyle = p.color; celebCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); celebCtx.restore(); } requestAnimationFrame(updateCelebParticles); }
         updateCelebParticles();
 
-        document.addEventListener('contextmenu', e => { if (e.target.tagName !== 'TEXTAREA') e.preventDefault(); }, false);
-        document.addEventListener('selectstart', e => { if (e.target.tagName !== 'TEXTAREA') e.preventDefault(); }, false);
-        document.addEventListener('dragstart', e => { if (e.target.tagName !== 'TEXTAREA') e.preventDefault(); }, false);
+        document.addEventListener('contextmenu', e => { if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') e.preventDefault(); }, false);
+        document.addEventListener('selectstart', e => { if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') e.preventDefault(); }, false);
+        document.addEventListener('dragstart', e => { if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') e.preventDefault(); }, false);
     </script>
 
     <script type="module" src="main.js"></script>
-</body>
+    <script type="module" src="gemini-ai.js"></script> </body>
 </html>
