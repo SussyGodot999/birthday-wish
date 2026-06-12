@@ -1,6 +1,6 @@
 // main.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAcrfgKb1Npr0uT05-XK2rd5INfciH-Hmw",
@@ -14,6 +14,25 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// Realtime listener for remote app reset actions triggered by the Admin panel
+onSnapshot(doc(db, "system", "resetControl"), (docSnap) => {
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        const lastResetTime = data.resetTimestamp?.toDate()?.getTime() || 0;
+        const processedResetTime = parseInt(localStorage.getItem('lastProcessedReset') || '0');
+
+        // Check if a brand new reset order has arrived
+        if (lastResetTime > processedResetTime) {
+            localStorage.setItem('lastProcessedReset', lastResetTime.toString());
+            localStorage.removeItem('userSiteRating');
+            localStorage.removeItem('cakeBlownOut');
+            
+            // Dispatch window trigger to reset UI views instantly
+            window.dispatchEvent(new StorageEvent('storage', { key: 'userSiteRating', newValue: null }));
+        }
+    }
+});
 
 // 1. Send Text Message
 const submitBtn = document.getElementById("submit-btn"); 
@@ -57,7 +76,7 @@ window.addEventListener('ratingSubmitted', async (e) => {
     } catch (error) { console.error("Error saving rating: ", error); }
 });
 
-// 3. Send Questionnaire Answers (NEW)
+// 3. Send Questionnaire Answers
 window.addEventListener('questionnaireSubmitted', async (e) => {
     try {
         await addDoc(collection(db, "comments"), {
@@ -67,17 +86,4 @@ window.addEventListener('questionnaireSubmitted', async (e) => {
         });
         console.log("Questionnaire saved!");
     } catch (error) { console.error("Error saving questionnaire: ", error); }
-});
-
-// 4. Send AI Chat Logs (NEW)
-window.addEventListener('aiChatSubmitted', async (e) => {
-    try {
-        await addDoc(collection(db, "comments"), {
-            type: "ai_chat",
-            userMessage: e.detail.userMsg,
-            aiReply: e.detail.aiReply,
-            timestamp: serverTimestamp()
-        });
-        console.log("AI Chat saved!");
-    } catch (error) { console.error("Error saving AI Chat: ", error); }
 });
