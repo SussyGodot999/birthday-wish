@@ -1,3 +1,4 @@
+// main.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -21,27 +22,21 @@ const commentInput = document.getElementById("comment-input");
 if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
         const textValue = commentInput.value.trim();
-        
         if (textValue !== "") {
             const statusDiv = document.getElementById("comment-status");
             if(statusDiv) {
                 statusDiv.style.display = "block";
                 statusDiv.innerText = "Uploading your message safely... ✨";
             }
-
             try {
-                // Save specifically as a "message" type document
                 await addDoc(collection(db, "comments"), {
                     type: "message",
                     text: textValue,
                     timestamp: serverTimestamp() 
                 });
-                
                 commentInput.value = ""; 
-
                 if(statusDiv) statusDiv.innerText = "Message Delivered Successfully! 💖";
                 setTimeout(() => { if(statusDiv) statusDiv.style.display = "none"; }, 3000);
-
             } catch (e) {
                 console.error("Error adding message: ", e);
                 if(statusDiv) statusDiv.innerText = "Something went wrong! Please try again.";
@@ -50,18 +45,39 @@ if (submitBtn) {
     });
 }
 
-// 2. Send Rating Separately and Instantly
+// 2. Send Rating
 window.addEventListener('ratingSubmitted', async (e) => {
-    const ratingValue = e.detail;
     try {
-        // Save specifically as a "rating" type document
         await addDoc(collection(db, "comments"), {
             type: "rating",
-            rating: ratingValue,
+            rating: e.detail,
             timestamp: serverTimestamp()
         });
-        console.log("Rating securely saved to database!");
-    } catch (error) {
-        console.error("Error saving rating: ", error);
-    }
+        console.log("Rating saved!");
+    } catch (error) { console.error("Error saving rating: ", error); }
+});
+
+// 3. Send Questionnaire Answers (NEW)
+window.addEventListener('questionnaireSubmitted', async (e) => {
+    try {
+        await addDoc(collection(db, "comments"), {
+            type: "questionnaire",
+            answers: e.detail, // Array of {question, answer}
+            timestamp: serverTimestamp()
+        });
+        console.log("Questionnaire saved!");
+    } catch (error) { console.error("Error saving questionnaire: ", error); }
+});
+
+// 4. Send AI Chat Logs (NEW)
+window.addEventListener('aiChatSubmitted', async (e) => {
+    try {
+        await addDoc(collection(db, "comments"), {
+            type: "ai_chat",
+            userMessage: e.detail.userMsg,
+            aiReply: e.detail.aiReply,
+            timestamp: serverTimestamp()
+        });
+        console.log("AI Chat saved!");
+    } catch (error) { console.error("Error saving AI Chat: ", error); }
 });
