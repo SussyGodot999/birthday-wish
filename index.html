@@ -44,7 +44,7 @@
             align-items: center;
             overflow-x: hidden;
             position: relative;
-            padding-bottom: 120px; /* Space for the bottom AI bar */
+            padding-bottom: 40px;
         }
 
         #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
@@ -72,7 +72,7 @@
         }
 
         /* Existing Envelope Styles */
-        .envelope-wrapper { display: flex; flex-direction: column; align-items: center; transition: transform 1s ease, opacity 0.5s ease; width: 100%; }
+        .envelope-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; transition: transform 1s ease, opacity 0.5s ease; width: 100%; }
         .envelope { position: relative; width: 280px; height: 180px; background: #fdfdfd; box-shadow: 0 10px 30px rgba(0,0,0,0.15); cursor: pointer; border-radius: 4px; }
         .envelope .flap { position: absolute; top: 0; width: 0; height: 0; border-left: 140px solid transparent; border-right: 140px solid transparent; border-top: 100px solid #f2f2f2; z-index: 3; transform-origin: top; transition: transform var(--transition-speed) ease; }
         .envelope .body { position: absolute; bottom: 0; width: 280px; height: 100px; background: #ffffff; z-index: 2; border-radius: 0 0 4px 4px; }
@@ -139,30 +139,10 @@
         .progress-bar-container { width: 100%; background: #FFE5EC; border-radius: 10px; height: 12px; margin-bottom: 20px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--deep-rose); width: 0%; transition: width 0.4s ease; }
 
-        /* Fixed Bottom Assistant Bar */
-        #bottom-assistant-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 3px dashed #FFB6C1;
-            padding: 10px 20px;
-            z-index: 999;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #countdown-text { font-family: 'Quicksand', sans-serif; font-weight: 700; color: #8A2846; font-size: 1rem; margin-bottom: 4px; text-align: center; }
-        #ai-chat-container { width: 100%; max-width: 450px; background: white; border-radius: 12px; border: 1px solid #FFB6C1; padding: 10px; margin-top: 10px; flex-direction: column; display: none; }
-        #chat-messages { max-height: 150px; overflow-y: auto; padding-right: 5px; margin-bottom: 10px; }
-        #chat-messages::-webkit-scrollbar { width: 4px; }
-        #chat-messages::-webkit-scrollbar-thumb { background: #FFB6C1; border-radius: 4px; }
-        .ai-input-wrapper { display: flex; gap: 8px; }
-        .ai-input-wrapper input { flex: 1; border: 1px solid #FFB6C1; border-radius: 20px; padding: 8px 15px; outline: none; font-family: 'Quicksand', sans-serif; }
+        /* Embedded Dynamic Countdown Area */
+        .embedded-countdown-box { margin-top: 15px; padding-top: 12px; border-top: 1px dotted #FF758F; text-align: center; font-family: 'Quicksand', sans-serif; }
+        .embedded-countdown-title { font-weight: 700; color: #8A2846; font-size: 0.9rem; margin-bottom: 4px; }
+        #countdown-text { font-weight: 700; color: var(--deep-rose); font-size: 1.1rem; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -200,13 +180,9 @@
                     <div class="grid-label">A Letter for You</div>
                 </div>
                 
-                <div class="grid-item" onclick="navigateTo('questionnaire-screen')">
+                <div class="grid-item full-width" onclick="navigateTo('questionnaire-screen')">
                     <div class="grid-icon">📝</div>
                     <div class="grid-label">You Wanted...</div>
-                </div>
-                <div class="grid-item" onclick="navigateTo('nhie-screen')">
-                    <div class="grid-icon">🫣</div>
-                    <div class="grid-label">Never Have I Ever</div>
                 </div>
 
                 <div class="grid-item" onclick="navigateTo('cake-screen')">
@@ -242,6 +218,11 @@
             <div class="banner-pink">
                 Take your time, enjoy each part, and always remember how much you mean to me.
                 <div style="margin-top: 5px; text-align: center;"><strong>I love you endlessly! 💕</strong></div>
+                
+                <div class="embedded-countdown-box">
+                    <div class="embedded-countdown-title">Next Birthday Countdown 🗓️</div>
+                    <div id="countdown-text">Calculating...</div>
+                </div>
             </div>
         </div>
 
@@ -263,20 +244,6 @@
                 <div id="q-finished-container" style="display: none;">
                     <p style="font-size: 1.1rem; font-weight: bold; color: #8A2846;">All done! Your wishes are safe with me. 💖</p>
                 </div>
-            </div>
-            <button class="btn-primary" onclick="navigateTo('menu-screen')">👈 Back to Menu</button>
-        </div>
-
-        <div id="nhie-screen" class="screen">
-            <h1 class="main-title" style="font-size: 2.4rem;">Never Have I Ever</h1>
-            <div class="sub-title">Bestie Edition 🫣</div>
-
-            <div class="card" style="padding: 30px 15px; min-height: 250px; display: flex; flex-direction: column; justify-content: center;">
-                <div class="bow-decoration">🎭</div>
-                <p id="nhie-text" style="font-size: 1.3rem; font-weight: bold; color: #8A2846; font-style: italic; margin-bottom: 25px;">
-                    "Click the button to reveal a truth!"
-                </p>
-                <button class="btn-primary" onclick="nextNHIE()" style="margin: 0 auto;">Next Statement 🎲</button>
             </div>
             <button class="btn-primary" onclick="navigateTo('menu-screen')">👈 Back to Menu</button>
         </div>
@@ -316,12 +283,12 @@
             <div class="sub-title">Blow the Candles! 🎂</div>
             <div class="card">
                 <div class="bow-decoration">✨</div>
-                <p class="body-text" id="cake-instruction" style="font-weight: 700; color: var(--deep-rose);">Activate microphone access and blow directly into your phone to put out the fire! 🌬️</p>
+                <p class="body-text" id="cake-instruction" style="font-weight: 700; color: var(--deep-rose);"></p>
                 <div class="cake-wrapper">
                     <div class="cake-base"><div class="cake-topping"></div></div>
-                    <div class="candle c1"><div class="flame"></div></div>
-                    <div class="candle c2"><div class="flame"></div></div>
-                    <div class="candle c3"><div class="flame"></div></div>
+                    <div class="candle c1"><div class="flame" id="flame-1"></div></div>
+                    <div class="candle c2"><div class="flame" id="flame-2"></div></div>
+                    <div class="candle c3"><div class="flame" id="flame-3"></div></div>
                 </div>
                 <div id="mic-status-container">
                     <button class="btn-primary" id="activate-mic-btn" onclick="startBlowDetection()" style="padding: 10px 20px; font-size: 0.95rem;">🎤 Activate Microphone</button>
@@ -378,37 +345,29 @@
 
     </div>
 
-    <div id="bottom-assistant-bar">
-        <div id="countdown-text">Loading Timer...</div>
-        <div style="font-size: 0.8rem; color: #554448; text-align: center; margin-bottom: 5px;">I will be always there with you and be ready for your next birthday surprises. 💖</div>
-        
-        <div id="ai-chat-container">
-            <div id="chat-messages"></div>
-            <div class="ai-input-wrapper">
-                <input type="text" id="ai-input" placeholder="Say something sweet...">
-                <button id="ai-send" class="btn-primary" style="padding: 8px 15px; font-size: 0.9rem;">Send</button>
-            </div>
-        </div>
-
-        <button id="toggle-chat-btn" style="background: none; border: none; color: var(--deep-rose); font-family: 'Quicksand', sans-serif; font-weight: bold; cursor: pointer; margin-top: 5px;">💬 Talk to my AI Assistant</button>
-    </div>
-
     <script>
-        // --- COUNTDOWN TIMER LOGIC ---
+        // --- FIXED EXACT BIRTHDAY COUNTDOWN LOGIC (MARCH 13TH) ---
         function updateCountdown() {
             const now = new Date();
-            // Assuming next birthday is 1 year from now for demonstration.
-            const nextBday = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()); 
+            let currentYear = now.getFullYear();
             
-            const diff = nextBday - now;
-            const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
-            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+            // Set targeted date explicitly to March 13th
+            let targetBday = new Date(currentYear, 2, 13, 0, 0, 0); 
+            
+            // If March 13th has already passed this year, point to next year's March 13th
+            if (now > targetBday) {
+                targetBday = new Date(currentYear + 1, 2, 13, 0, 0, 0);
+            }
+            
+            const diff = targetBday - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
             document.getElementById('countdown-text').innerText = 
-                `${months}m : ${days}d : ${hours}h : ${mins}m : ${secs}s`;
+                `${days}d : ${hours}h : ${mins}m : ${secs}s`;
         }
         setInterval(updateCountdown, 1000);
         updateCountdown();
@@ -444,7 +403,7 @@
 
         document.getElementById('q-next-btn').addEventListener('click', () => {
             const answer = qInput.value.trim();
-            if(!answer) return; // Must answer
+            if(!answer) return;
 
             answersArray.push({ question: questions[currentQIndex], answer: answer });
             currentQIndex++;
@@ -457,29 +416,12 @@
                 document.getElementById('question-container').style.display = "none";
                 document.getElementById('q-finished-container').style.display = "block";
                 
-                // Dispatch event to send to Firebase
                 window.dispatchEvent(new CustomEvent('questionnaireSubmitted', { detail: answersArray }));
             }
         });
-        loadQuestion(); // Initial load
+        loadQuestion();
 
-        // --- NEVER HAVE I EVER LOGIC ---
-        const nhieStatements = [
-            "Never have I ever stayed up past 3 AM talking to you. 🌙",
-            "Never have I ever borrowed your clothes and 'forgotten' to return them. 👗",
-            "Never have I ever laughed so hard with you that I cried. 😂",
-            "Never have I ever ignored someone else's text just to talk to you. 📱",
-            "Never have I ever sent you an ugly selfie. 📸",
-            "Never have I ever planned an imaginary vacation for us. 🏝️",
-            "Never have I ever known exactly what you were thinking just by looking at you. 👀"
-        ];
-        function nextNHIE() {
-            const random = nhieStatements[Math.floor(Math.random() * nhieStatements.length)];
-            document.getElementById('nhie-text').innerText = `"${random}"`;
-            triggerConfettiExplosion();
-        }
-
-        // --- FIXED RATING SYSTEM LOGIC ---
+        // --- RATING SYSTEM LOGIC ---
         const stars = document.querySelectorAll('.stars span');
         const ratingText = document.getElementById('rating-text');
         const ratingLabels = ["Bad", "Okay", "Good", "Amazing", "Brilliant! ✨"];
@@ -493,9 +435,23 @@
                     s.style.pointerEvents = 'none';
                 });
                 if(ratingText) ratingText.innerText = ratingLabels[siteRating - 1] + " (Permanently Saved!)";
+            } else {
+                stars.forEach((s) => {
+                    s.classList.remove('active');
+                    s.style.pointerEvents = 'auto';
+                });
+                if(ratingText) ratingText.innerText = "Rate me!";
             }
         }
         initializeRating();
+
+        // Listen for remote reset requests from admin panel
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'userSiteRating' && e.newValue === null) {
+                initializeRating();
+                resetCakeUI();
+            }
+        });
 
         stars.forEach((star, index) => {
             star.addEventListener('click', () => {
@@ -513,7 +469,7 @@
             });
         });
 
-        // PRE-EXISTING LOGIC & ANIMATIONS
+        // --- ENVELOPE & SURPRISE LOGIC ---
         let audioStream = null; let audioContext = null; let isEnvelopeOpened = false;
         function openEnvelopeSequence() {
             if (isEnvelopeOpened) return;
@@ -538,6 +494,26 @@
             document.getElementById('surprise-hint').innerText = "Look what opened up! ✨";
             document.getElementById('surprise-reveal').style.display = "block";
             triggerConfettiExplosion();
+        }
+
+        // --- CAKE LOGIC ---
+        function checkCakeState() {
+            const instruction = document.getElementById('cake-instruction');
+            if(localStorage.getItem('cakeBlownOut') === 'true') {
+                document.querySelectorAll('.flame').forEach(f => f.classList.add('blown-out'));
+                instruction.innerHTML = "✨ 🎉 Make a wish! Happy Birthday! 🎉 ✨";
+                document.getElementById('mic-status-container').innerHTML = `<div class="mic-badge" style="background:#D4EDDA; color:#155724;">✨ Blowout Complete!</div>`;
+            } else {
+                document.querySelectorAll('.flame').forEach(f => f.classList.remove('blown-out'));
+                instruction.innerHTML = "Activate microphone access and blow directly into your phone to put out the fire! 🌬️";
+                document.getElementById('mic-status-container').innerHTML = `<button class="btn-primary" id="activate-mic-btn" onclick="startBlowDetection()" style="padding: 10px 20px; font-size: 0.95rem;">🎤 Activate Microphone</button>`;
+            }
+        }
+        window.addEventListener('DOMContentLoaded', checkCakeState);
+
+        function resetCakeUI() {
+            localStorage.removeItem('cakeBlownOut');
+            checkCakeState();
         }
 
         function stopAudioTracks() {
@@ -565,13 +541,15 @@
         }
 
         function extinguishCandles() {
-            stopAudioTracks(); document.querySelectorAll('.flame').forEach(f => f.classList.add('blown-out'));
+            stopAudioTracks(); 
+            localStorage.setItem('cakeBlownOut', 'true');
+            document.querySelectorAll('.flame').forEach(f => f.classList.add('blown-out'));
             document.getElementById('cake-instruction').innerHTML = "✨ 🎉 Make a wish! Happy Birthday! 🎉 ✨";
             document.getElementById('mic-status-container').innerHTML = `<div class="mic-badge" style="background:#D4EDDA; color:#155724;">✨ Blowout Complete!</div>`;
             triggerConfettiExplosion(); setTimeout(triggerConfettiExplosion, 350); setTimeout(triggerConfettiExplosion, 800);
         }
 
-        // Particle Canvas Logic
+        // Particle Canvas Background Logic
         const bgCanvas = document.getElementById('particleCanvas'); const bgCtx = bgCanvas.getContext('2d'); let bgParticles = [];
         function resizeBgCanvas() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
         window.addEventListener('resize', resizeBgCanvas); resizeBgCanvas();
@@ -594,5 +572,5 @@
     </script>
 
     <script type="module" src="main.js"></script>
-    <script type="module" src="gemini-ai.js"></script> </body>
+</body>
 </html>
